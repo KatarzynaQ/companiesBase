@@ -1,6 +1,7 @@
 package com.sda.projectd.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -19,6 +20,7 @@ public class Company {
     private String regon;
 
     public Company() {
+        this.names=new HashSet<>();
     }
 
     public void setNames(Set<String> names) {

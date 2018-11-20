@@ -65,7 +65,6 @@ public class CompanyServiceTest {
 
     private Company createCommandWithAllProperties() {
         Company company = new Company();
-        company.setNames(new HashSet<String>());
         company.addName("Company sp. z o.o.");
         company.setKrs("1234567891");
         company.setNip("1234567891");
