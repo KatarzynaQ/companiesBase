@@ -10,10 +10,10 @@
 </head>
 <body>
 <div class="container">
-    <form th:action="@{/add}" method="post" th:object="${company}">
+    <form th:action="@{/add}" method="post" >
         <div class="form-group">
         <p> <label>Nazwa</label>
-            <input type="text" th:field="*{name}">
+            <input type="text" >
         </p>
         <p> <label> Ulica</label>
             <input type="text">
@@ -31,6 +31,16 @@
        <p>  <label> Miejscowość</label>
             <input type="text">
        </p>
+            <p> <label> KRS</label>
+                <input type="text">
+            </p>
+            <p>
+                <label> NIP</label>
+                <input type="text">
+            </p>
+            <p>  <label> REGON</label>
+                <input type="text">
+            </p>
         </div>
         <button type="submit">Dodaj firmę</button>
     </form>

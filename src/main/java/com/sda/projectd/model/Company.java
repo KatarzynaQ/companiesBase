@@ -9,30 +9,21 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ElementCollection
-    private Set<String> name;
+    private Set<String> names;
     @OneToOne
     private Address address;
-
+    @Transient
+    private String newName;
     private String krs;
     private String nip;
     private String regon;
 
-    public Company(Set<String> name, Address address, String krs, String nip, String regon) {
-        this.name = name;
-        this.address = address;
-        this.nip = nip;
-        this.krs = krs;
-        this.regon = regon;
-    }
-
     public Company() {
     }
 
-
-    public void setNames(Set<String> name) {
-        this.name = name;
+    public void setNames(Set<String> names) {
+        this.names = names;
     }
-
 
     public void setNip(String nip) {
         this.nip = nip;
@@ -46,15 +37,13 @@ public class Company {
         this.regon = regon;
     }
 
-
     public Long getId() {
         return id;
     }
 
     public Set<String> getNames() {
-        return name;
+        return names;
     }
-
 
     public Address getAddress() {
         return address;
@@ -76,5 +65,11 @@ public class Company {
         return regon;
     }
 
+    public void addName(String name) {
+        names.add(name);
+    }
 
+    public String getNewName() {
+        return newName;
+    }
 }
