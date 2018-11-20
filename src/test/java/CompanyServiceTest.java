@@ -65,12 +65,11 @@ public class CompanyServiceTest {
 
     private Company createCommandWithAllProperties() {
         Company company = new Company();
-        company.setNip("");
         company.setNames(new HashSet<String>());
-        company.addName("a");
-        company.setKrs("1");
-        company.setNip("1");
-        company.setRegon("1");
+        company.addName("Company sp. z o.o.");
+        company.setKrs("1234567891");
+        company.setNip("1234567891");
+        company.setRegon("1234567891");
         return company;
     }
 }
