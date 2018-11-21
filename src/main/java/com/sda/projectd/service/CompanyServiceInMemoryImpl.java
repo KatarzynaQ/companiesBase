@@ -2,10 +2,14 @@ package com.sda.projectd.service;
 
 import com.sda.projectd.model.Address;
 import com.sda.projectd.model.Company;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.stream.Stream;
 
+@Component
 public class CompanyServiceInMemoryImpl implements CompanyService {
 
     private Collection<Company> companies;
@@ -16,12 +20,13 @@ public class CompanyServiceInMemoryImpl implements CompanyService {
 
     @Override
     public void addCompany(Company command) {
-        command.addName(command.getNewName());
+        command.setNewName(command.getNewName());
         companies.add(command);
     }
 
     @Override
-    public Collection<Company> findAll() {
-        return companies;
+    public Stream<Company> findByName(String name) {
+        return companies.stream().filter(n->n.getNewName().equals(name));
     }
+
 }

@@ -5,7 +5,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +24,7 @@ public class CompanyServiceTest {
 
     @DisplayName("should add a new company with all properties")
     @Test
-    void test() throws Exception {
+    void test0() throws Exception {
         // given
         Company command = createCommandWithAllProperties();
 
@@ -27,45 +32,53 @@ public class CompanyServiceTest {
         companyService.addCompany(command);
 
         // then
-        Collection<Company> allCompanies = companyService.findAll();
-        assertThat(allCompanies).hasSize(1);
-        Company addedCompany = allCompanies.iterator().next();
-        assertThat(addedCompany.getNames()).contains(command.getNewName());
-        assertThat(addedCompany.getKrs()).contains(command.getKrs());
-        assertThat(addedCompany.getNip()).contains(command.getNip());
-        assertThat(addedCompany.getRegon()).contains(command.getRegon());
+
+        assertThat(companyService.findByName(command.getNewName()).count()).isEqualTo(1L);
     }
 
-    @DisplayName("should throw exception when create a company with the same name as already existing")
+    @DisplayName("should load a single company by name")
     @Test
     void test1() throws Exception {
-    }
-
-    @DisplayName("should load all created companies")
-    @Test
-    void test2() throws Exception {
         // given
-        // TODO: add some companies
-        Company company1 = createCommandWithAllProperties();
-        Company company2 = createCommandWithAllProperties();
-        company2.addName("next name");
-        Company company3 = createCommandWithAllProperties();
-        company3.addName("next name2");
+        String name = "Company S.A.";
+        companyService.addCompany(createCommandWithName("ACME"));
+        companyService.addCompany(createCommandWithName(name));
+        companyService.addCompany(createCommandWithName("JetBrains"));
 
-        companyService.addCompany(company1);
-        companyService.addCompany(company2);
-        companyService.addCompany(company3);
         // when
-        Collection<Company> companies = companyService.findAll();
+        Company foundCompany = companyService.findByName(name).findAny().get();
 
-        // then
-        assertThat(companies).containsOnly(company1, company2,company3);
+        //then
+        assertThat(foundCompany.getNames()).contains(name);
     }
 
+    @DisplayName("should load two companies with the same name by name")
+    @Test
+    void test() throws Exception {
+        //given
+        String name= "Company";
+        companyService.addCompany(createCommandWithName(name));
+        companyService.addCompany(createCommandWithName(name));
+        companyService.addCompany(createCommandWithName("different name"));
+        //when
+        List<Company> byName = companyService.findByName(name).collect(Collectors.toList());
+        //then
+        assertThat(byName.size()).isEqualTo(2);
+
+    }
 
     private Company createCommandWithAllProperties() {
         Company company = new Company();
-        company.addName("Company sp. z o.o.");
+        company.setNewName("Company sp. z o.o.");
+        company.setKrs("1234567891");
+        company.setNip("1234567891");
+        company.setRegon("1234567891");
+        return company;
+    }
+
+    private Company createCommandWithName(String name) {
+        Company company = new Company();
+        company.setNewName(name);
         company.setKrs("1234567891");
         company.setNip("1234567891");
         company.setRegon("1234567891");
