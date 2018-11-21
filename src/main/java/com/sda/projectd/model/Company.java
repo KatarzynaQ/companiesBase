@@ -2,6 +2,7 @@ package com.sda.projectd.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -21,6 +22,11 @@ public class Company {
 
     public Company() {
         this.names=new HashSet<>();
+    }
+
+    public void setNewName(String newName) {
+        this.newName = newName;
+        names.add(newName);
     }
 
     public void setNames(Set<String> names) {
@@ -67,11 +73,38 @@ public class Company {
         return regon;
     }
 
-    public void addName(String name) {
-        names.add(name);
-    }
-
     public String getNewName() {
         return newName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Company)) return false;
+        Company company = (Company) o;
+        return Objects.equals(names, company.names) &&
+                Objects.equals(address, company.address) &&
+                Objects.equals(newName, company.newName) &&
+                Objects.equals(krs, company.krs) &&
+                Objects.equals(nip, company.nip) &&
+                Objects.equals(regon, company.regon);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(names, address, newName, krs, nip, regon);
+    }
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", names=" + names +
+                ", address=" + address +
+                ", newName='" + newName + '\'' +
+                ", krs='" + krs + '\'' +
+                ", nip='" + nip + '\'' +
+                ", regon='" + regon + '\'' +
+                '}';
     }
 }
