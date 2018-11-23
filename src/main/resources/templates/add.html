@@ -13,7 +13,7 @@
     <form th:action="@{/add}" method="post" th:object="${company}">
         <div class="form-group">
         <p> <label>Nazwa</label>
-            <input type="text" name="name" th:field="*{newName}" >
+            <input type="text" name="name" th:field="*{currentName}" >
         </p>
         <p> <label> Ulica</label>
             <input type="text" name="street" th:field="*{address.street}">
@@ -43,6 +43,14 @@
             </p>
         </div>
         <button type="submit">Dodaj firmę</button>
+    </form>
+
+    <form th:action="@{/companies}" method="get">
+            <div class="form-group">
+                <label>Wyszukaj firmę po nazwie</label>
+                <input type="text" name="nameToFind" />
+            </div>
+        <button type="submit">Wyszukaj</button>
     </form>
 </div>
 </body>
