@@ -12,10 +12,9 @@ public class Company {
     private Long id;
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> names;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     private Address address;
-    @Transient
-    private String newName;
+    private String currentName;
     private String krs;
     private String nip;
     private String regon;
@@ -24,9 +23,9 @@ public class Company {
         this.names=new HashSet<>();
     }
 
-    public void setNewName(String newName) {
-        this.newName = newName;
-        names.add(newName);
+    public void setCurrentName(String currentName) {
+        this.currentName = currentName;
+        names.add(currentName);
     }
 
     public void setNames(Set<String> names) {
@@ -73,8 +72,8 @@ public class Company {
         return regon;
     }
 
-    public String getNewName() {
-        return newName;
+    public String getCurrentName() {
+        return currentName;
     }
 
     @Override
@@ -84,7 +83,7 @@ public class Company {
         Company company = (Company) o;
         return Objects.equals(names, company.names) &&
                 Objects.equals(address, company.address) &&
-                Objects.equals(newName, company.newName) &&
+                Objects.equals(currentName, company.currentName) &&
                 Objects.equals(krs, company.krs) &&
                 Objects.equals(nip, company.nip) &&
                 Objects.equals(regon, company.regon);
@@ -92,7 +91,7 @@ public class Company {
 
     @Override
     public int hashCode() {
-        return Objects.hash(names, address, newName, krs, nip, regon);
+        return Objects.hash(names, address, currentName, krs, nip, regon);
     }
 
     @Override
@@ -101,7 +100,7 @@ public class Company {
                 "id=" + id +
                 ", names=" + names +
                 ", address=" + address +
-                ", newName='" + newName + '\'' +
+                ", currentName='" + currentName + '\'' +
                 ", krs='" + krs + '\'' +
                 ", nip='" + nip + '\'' +
                 ", regon='" + regon + '\'' +

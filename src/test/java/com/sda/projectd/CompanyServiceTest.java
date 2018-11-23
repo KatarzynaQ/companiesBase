@@ -41,7 +41,7 @@ public class CompanyServiceTest {
         companyService.addCompany(command);
 
         // then
-        assertThat(companyService.findByName(command.getNewName()).size()).isEqualTo(1);
+        assertThat(companyService.findByName(command.getCurrentName()).size()).isEqualTo(1);
     }
 
     @DisplayName("should load a single company by name")
@@ -79,7 +79,7 @@ public class CompanyServiceTest {
 
     private Company createCommandWithAllProperties() {
         Company company = new Company();
-        company.setNewName("Company sp. z o.o.");
+        company.setCurrentName("Company sp. z o.o.");
         company.setKrs("1234567891");
         company.setNip("1234567891");
         company.setRegon("1234567891");
@@ -88,7 +88,7 @@ public class CompanyServiceTest {
 
     private Company createCommandWithName(String name) {
         Company company = new Company();
-        company.setNewName(name);
+        company.setCurrentName(name);
         company.setKrs("1234567891");
         company.setNip("1234567891");
         company.setRegon("1234567891");

@@ -17,7 +17,7 @@ public class CompanyServiceInMemoryImpl implements CompanyService {
 
     @Override
     public void addCompany(Company command) {
-        command.setNewName(command.getNewName());
+        command.setCurrentName(command.getCurrentName());
         companies.add(command);
     }
 
