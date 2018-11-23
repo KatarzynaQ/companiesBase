@@ -10,6 +10,13 @@
             crossorigin="anonymous"></script>
 </head>
 <body>
+<form th:action="@{/companies}" method="get">
+    <div class="form-group">
+        <label>Wyszukaj firmę po nazwie</label>
+        <input type="text" name="nameToFind"/>
+    </div>
+    <button type="submit">Wyszukaj</button>
+</form>
 <div th:each="company: ${findCompanies}" th:object="${company}">
 
     <div class="accordion" id="accordionExample">
@@ -38,5 +45,10 @@
     </div>
 
 </div>
+
+<a th:href="@{/add}">
+    Dodaj firmę
+</a>
+
 </body>
 </html>

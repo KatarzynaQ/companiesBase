@@ -28,13 +28,14 @@ public class WebController {
         System.out.println(company.toString());
     }
     @GetMapping(value = "/companies")
-    ModelAndView getCompanies(@RequestParam (name = "nameToFind") String name){
+    ModelAndView getCompanies(@RequestParam (name = "nameToFind", required = false) String name){
         ModelAndView modelAndView = new ModelAndView();
         Collection<Company> companies = companyService.findByName(name);
         modelAndView.addObject("findCompanies",companies);
         modelAndView.setViewName("companies");
         return modelAndView;
     }
+
 
 
 

@@ -45,13 +45,9 @@
         <button type="submit">Dodaj firmę</button>
     </form>
 
-    <form th:action="@{/companies}" method="get">
-            <div class="form-group">
-                <label>Wyszukaj firmę po nazwie</label>
-                <input type="text" name="nameToFind" />
-            </div>
-        <button type="submit">Wyszukaj</button>
-    </form>
 </div>
+<a th:href="@{/companies}">
+    Przejdź do wyszukiwania
+</a>
 </body>
 </html>
