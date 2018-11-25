@@ -15,29 +15,27 @@ public class WebController {
     CompanyService companyService;
 
     @GetMapping(value = "/add")
-    ModelAndView getAddForm() {
+    ModelAndView getAddForm(@RequestParam(value = "companyId", defaultValue = "-1") Long companyId) {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("add");
-        modelAndView.addObject("company", new Company());
+        modelAndView.addObject("company",
+                companyService.findById(companyId).orElse(new Company()));
         return modelAndView;
     }
 
     @PostMapping(value = "/add")
     void addCompany(@ModelAttribute("company") Company company) {
         companyService.addCompany(company);
-        System.out.println(company.toString());
     }
+
     @GetMapping(value = "/companies")
-    ModelAndView getCompanies(@RequestParam (name = "nameToFind", required = false) String name){
+    ModelAndView getCompanies(@RequestParam(name = "nameToFind", required = false) String name) {
         ModelAndView modelAndView = new ModelAndView();
         Collection<Company> companies = companyService.findByName(name);
-        modelAndView.addObject("findCompanies",companies);
+        modelAndView.addObject("findCompanies", companies);
         modelAndView.setViewName("companies");
         return modelAndView;
     }
-
-
-
 
 
 }

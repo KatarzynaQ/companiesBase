@@ -10,13 +10,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -74,5 +74,31 @@ public class WebControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("findCompanies", expectedCompanies));
         verify(companyService, times(1)).findByName("C S.A.");
+    }
+
+    @DisplayName("should change currentName and save old name in names")
+    @Test
+    void test3() throws Exception {
+        Company companyToChange = new Company();
+        companyToChange.setCurrentName("Name to change");
+        companyToChange.setRegon("1");
+        companyToChange.setNip("1");
+        companyToChange.setKrs("1");
+        companyToChange.setAddress(new Address("w","w","q","q","e"));
+        companyToChange.setCurrentName("Changed Name");
+        Collection<Company>toReturn= Arrays.asList(companyToChange);
+       when(companyService.findByName("Name to change")).thenReturn(toReturn);
+
+
+//
+//        Long id = company.getId();
+//        String value=id.toString();
+     mockMvc.perform(get("/companies"))
+             .andExpect(status().isOk());
+     mockMvc.perform(get("/companies").param("nameToFind","Name to change"))
+             .andExpect((model()
+                     .attribute("findCompanies",companyToChange)));
+
+//                .andExpect(model().attribute("company.names",companyToChange.getNames()));
     }
 }

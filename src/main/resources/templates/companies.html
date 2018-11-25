@@ -16,6 +16,10 @@
         <input type="text" name="nameToFind"/>
     </div>
     <button type="submit">Wyszukaj</button>
+
+    <a th:href="@{/add}">
+        Dodaj firmę
+    </a>
 </form>
 <div th:each="company: ${findCompanies}" th:object="${company}">
 
@@ -32,13 +36,50 @@
 
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                 <div class="card-body">
-
                     <span th:each="name:${company.names}" th:text="${name}"></span>
-                    <span th:text="${company.address.street}">Ulica</span>
-                    <span th:text="${company.address.houseNumber}">2</span>
-                    <span th:text="${company.address.flatNumber}">1</span>
-                    <span th:text="${company.address.postalCode}">11-111</span>
-                    <span th:text="${company.address.city}">Miasta</span>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">Ulica</th>
+                            <th scope="col">Budynek</th>
+                            <th scope="col">Lokal</th>
+                            <th scope="col">Kod pocztowy</th>
+                            <th scope="col">Miejscowość</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:text="${company.address.street}"> x</td>
+                            <td th:text="${company.address.houseNumber}">x</td>
+                            <td th:text="${company.address.flatNumber}">x</td>
+                            <td th:text="${company.address.postalCode}">x</td>
+                            <td th:text="${company.address.city}">x</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">KRS</th>
+                            <th scope="col">NIP</th>
+                            <th scope="col">REGON</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <td th:text="${company.krs}"></td>
+                            <td th:text="${company.nip}"></td>
+                            <td th:text="${company.regon}"></td>
+                        </tbody>
+                    </table>
+                    <!--<span th:each="name:${company.names}" th:text="${name}">Pierwsza Nazwa</span>-->
+                    <!--<span th:text="${company.address.street}">Ulica</span>-->
+                    <!--<span th:text="${company.address.houseNumber}">2</span>-->
+                    <!--<span th:text="${company.address.flatNumber}">1</span>-->
+                    <!--<span th:text="${company.address.postalCode}">11-111</span>-->
+                    <!--<span th:text="${company.address.city}">Miasta</span>-->
+
+                    <a th:href="@{/add(id=${company.id})}">Edytuj</a>
                 </div>
             </div>
         </div>
@@ -46,9 +87,6 @@
 
 </div>
 
-<a th:href="@{/add}">
-    Dodaj firmę
-</a>
 
 </body>
 </html>
