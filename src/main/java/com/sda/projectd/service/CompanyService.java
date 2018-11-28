@@ -6,7 +6,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface CompanyService {
-    void addCompany(Company company);
+    void updateCompany(Long id, Company company) throws CompanyDoesntExistException;
+    Company addCompany(Company company) throws CompanyAlreadyExistsException;
     Collection<Company> findByName(String name);
     Optional<Company> findById(Long companyId);
 }

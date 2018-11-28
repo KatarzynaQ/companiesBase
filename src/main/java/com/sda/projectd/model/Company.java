@@ -19,8 +19,13 @@ public class Company {
     private String nip;
     private String regon;
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Company() {
         this.names=new HashSet<>();
+        address = new Address();
     }
 
     public void setCurrentName(String currentName) {

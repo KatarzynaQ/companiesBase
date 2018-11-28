@@ -36,7 +36,7 @@
 
             <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                 <div class="card-body">
-                    <span th:each="name:${company.names}" th:text="${name}"></span>
+                    <span class="border" th:each="name:${company.names}" th:text="${name}"></span>
                     <table class="table">
                         <thead>
                         <tr>
@@ -79,7 +79,7 @@
                     <!--<span th:text="${company.address.postalCode}">11-111</span>-->
                     <!--<span th:text="${company.address.city}">Miasta</span>-->
 
-                    <a th:href="@{/add(id=${company.id})}">Edytuj</a>
+                    <a th:href="@{/add(companyId=${company.id})}">Edytuj</a>
                 </div>
             </div>
         </div>
