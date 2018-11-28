@@ -2,6 +2,8 @@ package com.sda.projectd;
 
 import com.sda.projectd.model.Company;
 import com.sda.projectd.repository.CompanyRepository;
+import com.sda.projectd.service.CompanyAlreadyExistsException;
+import com.sda.projectd.service.CompanyDoesntExistException;
 import com.sda.projectd.service.CompanyService;
 import com.sda.projectd.service.CompanyServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,8 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -78,6 +82,24 @@ public class CompanyServiceTest {
         assertThat(byName.size()).isEqualTo(2);
     }
 
+    @DisplayName("should update names history when change current name in the existing company")
+    @Test
+    void test() throws Exception {
+        // given
+        String oldName = "old name";
+        Company company = new Company();
+        company.setCurrentName(oldName);
+        company = companyService.addCompany(company);
+
+        // when
+        String newName = "new name";
+        company.setCurrentName(newName);
+        companyService.updateCompany(company.getId(), company);
+
+        // then
+        assertThat(companyService.findById(company.getId()).get()).isEqualTo(company);
+    }
+
     @DisplayName("should actualize size of name's list when new name is added")
     @Test
     void test3() throws Exception {
@@ -88,7 +110,7 @@ public class CompanyServiceTest {
         Collection<Company> byName = companyService.findByName("Company sp. z o.o.");
         //than
         assertThat(byName).contains(company);
-        List<Company>byNameList=new ArrayList(byName);
+        List<Company> byNameList = new ArrayList(byName);
         assertThat(byNameList.get(0).getNames().size()).isEqualTo(2);
     }
 
@@ -103,12 +125,62 @@ public class CompanyServiceTest {
         assertThat(byName.size()).isEqualTo(1);
     }
 
+    @DisplayName("should throw Excepion when try to add two companies with the same id")
+    @Test
+    void test5() throws CompanyAlreadyExistsException {
+        Company company = companyService.addCompany(createCompanyWithAllProperties());
+        Company companyWithTheSameId = new Company();
+        companyWithTheSameId.setId(company.getId());
+
+        // when
+        Throwable e = catchThrowable(() -> companyService.addCompany(company));
+
+        // then
+        assertThat(e).isInstanceOf(CompanyAlreadyExistsException.class);
+    }
+
+    @DisplayName("should throw CompanyDoesntExistsException when companyId to find doesnt exist in base")
+    @Test
+    void test6() throws Exception {
+        //given
+        Company company = new Company();
+
+        //when
+        Throwable e = catchThrowable(() -> companyService.updateCompany(-2L, company));
+        //than
+        assertThat(e).isInstanceOf(CompanyDoesntExistException.class);
+    }
+
+    @DisplayName("should not add new company when update")
+    @Test
+    void test7() throws Exception {
+        //given
+        Company company = companyService.addCompany(createCompanyWithName("old"));
+
+        //when
+        companyService.updateCompany(company.getId(), createCompanyWithName("changeName"));
+
+        //then
+        Collection<Company> companiesWithNewName = companyService.findByName("changeName");
+        Collection<Company> companiesWithOldName = companyService.findByName("old");
+        assertThat(companiesWithNewName).hasSize(1).containsOnlyElementsOf(companiesWithOldName);
+    }
+
+    @DisplayName("should upload file")
+    @Test
+    void test8() throws Exception {
+        //given
+
+
+        fail("bum");
+    }
 
     private Company createCompanyWithTwoNames() {
         Company company = createCompanyWithAllProperties();
         company.setCurrentName("Nowa nazwa Firmy");
         return company;
     }
+
     private Company createCompanyWithAllProperties() {
         Company company = new Company();
         company.setCurrentName("Company sp. z o.o.");

@@ -18,8 +18,29 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public void addCompany(Company company) {
-        companyRepository.save(company);
+    public void updateCompany(Long id, Company company) throws CompanyDoesntExistException {
+        findById(id).map(oldCompany -> {
+            oldCompany.setCurrentName(company.getCurrentName());
+            oldCompany.setAddress(company.getAddress());
+            if (company.getKrs() != null) {
+                oldCompany.setKrs(company.getKrs());
+            }
+            oldCompany.setNip(company.getNip());
+            oldCompany.setRegon(company.getRegon());
+            oldCompany.setAddress(company.getAddress());
+            // repeat for all the other properties you want to update from the company object
+            companyRepository.save(oldCompany);
+            return oldCompany;
+        }).orElseThrow(() -> new CompanyDoesntExistException("Nie ma takiej firmy"));
+    }
+
+    @Override
+    public Company addCompany(Company company) throws CompanyAlreadyExistsException {
+        if (company.getId() != null) {
+            throw new CompanyAlreadyExistsException("Firma już istnieje");
+        } else
+            return companyRepository.
+                    save(company);
     }
 
     @Override

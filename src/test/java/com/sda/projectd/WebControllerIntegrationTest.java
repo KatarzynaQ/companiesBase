@@ -10,9 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.RequestBuilder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -34,30 +33,38 @@ public class WebControllerIntegrationTest {
     @DisplayName("should add new Company when POST is called on /add")
     @Test
     void test1() throws Exception {
-        Company company = new Company();
-        company.setCurrentName("Company S.A.");
-        company.setAddress(new Address("Kwiatowa", "1", "2", "00-111", "Miasto"));
-        company.setKrs("1111111111");
-        company.setNip("111111111");
-        company.setRegon("111111111");
+        Company company = createCompany();
         // when
-        mockMvc.perform(post("/add").param("currentName", "Company S.A.")
-                .param("address.street", "Kwiatowa")
-                .param("address.houseNumber", "1")
-                .param("address.flatNumber", "2")
-                .param("address.postalCode", "00-111")
-                .param("address.city", "Miasto")
-                .param("krs", "1111111111")
-                .param("nip", "111111111")
-                .param("regon", "111111111"))
+        mockMvc.perform(postWithCompanyWithoutId(company,"/add"))
                 //then
                 .andExpect(status().isOk());
         verify(companyService, times(1)).addCompany(company);
     }
 
+    @DisplayName("should call add company when id is not given")
+    @Test
+    void test21() throws Exception {
+        //given
+        Company company = createCompany();
+        // when
+        mockMvc.perform(postWithCompanyWithoutId(company, "/add"));
+        verify(companyService, times(1)).addCompany(company);
+    }
+
+    @DisplayName("should call update company when id is given")
+    @Test
+    void test22() throws Exception {
+        //given
+        Company company = createCompany();
+        company.setId(2L);
+        //when
+        mockMvc.perform(postWithCompanyId(company,"/add","2"));
+        verify(companyService,times(1)).updateCompany(2L,company);
+    }
+
     @DisplayName("should load findBy name companies")
     @Test
-    void test2() throws Exception {
+    void test3() throws Exception {
         // given
         Company fakeCompany = new Company();
         fakeCompany.setCurrentName("C S.A.");
@@ -78,27 +85,50 @@ public class WebControllerIntegrationTest {
 
     @DisplayName("should change currentName and save old name in names")
     @Test
-    void test3() throws Exception {
-        Company companyToChange = new Company();
-        companyToChange.setCurrentName("Name to change");
-        companyToChange.setRegon("1");
-        companyToChange.setNip("1");
-        companyToChange.setKrs("1");
-        companyToChange.setAddress(new Address("w","w","q","q","e"));
-        companyToChange.setCurrentName("Changed Name");
-        Collection<Company>toReturn= Arrays.asList(companyToChange);
-       when(companyService.findByName("Name to change")).thenReturn(toReturn);
+    void test4() throws Exception {
+        // given
+        Collection<Company> companies = Arrays.asList(new Company());
+        String nameToFindParamValue = "Name to change";
+        when(companyService.findByName(nameToFindParamValue)).thenReturn(companies);
 
+        // when
+        mockMvc.perform(get("/companies")
+                .param("nameToFind", nameToFindParamValue))
 
-//
-//        Long id = company.getId();
-//        String value=id.toString();
-     mockMvc.perform(get("/companies"))
-             .andExpect(status().isOk());
-     mockMvc.perform(get("/companies").param("nameToFind","Name to change"))
-             .andExpect((model()
-                     .attribute("findCompanies",companyToChange)));
-
-//                .andExpect(model().attribute("company.names",companyToChange.getNames()));
+                // then
+                .andExpect((model()
+                        .attribute("findCompanies", companies)));
+    }
+    private Company createCompany() {
+        Company company = new Company();
+        company.setCurrentName("Company S.A.");
+        company.setAddress(new Address("Kwiatowa", "1", "2", "00-111", "Miasto"));
+        company.setKrs("1111111111");
+        company.setNip("111111111");
+        company.setRegon("111111111");
+        return company;
+    }
+    private RequestBuilder postWithCompanyWithoutId(Company company, String path) {
+        return post(path).param("currentName",company.getCurrentName())
+                .param("address.street",company.getAddress().getStreet())
+                .param("address.houseNumber",company.getAddress().getHouseNumber())
+                .param("address.flatNumber",company.getAddress().getFlatNumber())
+                .param("address.postalCode",company.getAddress().getPostalCode())
+                .param("address.city",company.getAddress().getCity())
+                .param("krs",company.getKrs())
+                .param("nip",company.getNip())
+                .param("regon",company.getRegon());
+    }
+    private RequestBuilder postWithCompanyId(Company company, String s, String id) {
+        return post(s).param("currentName",company.getCurrentName())
+                .param("address.street",company.getAddress().getStreet())
+                .param("address.houseNumber",company.getAddress().getHouseNumber())
+                .param("address.flatNumber",company.getAddress().getFlatNumber())
+                .param("address.postalCode",company.getAddress().getPostalCode())
+                .param("address.city",company.getAddress().getCity())
+                .param("krs",company.getKrs())
+                .param("nip",company.getNip())
+                .param("regon",company.getRegon())
+                .param("id",id);
     }
 }
