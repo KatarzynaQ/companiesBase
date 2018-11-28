@@ -1,7 +1,11 @@
 package com.sda.projectd.service;
 
 import com.sda.projectd.model.Company;
+import org.bson.types.ObjectId;
 
+import javax.print.DocFlavor;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Optional;
 

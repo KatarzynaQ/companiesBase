@@ -2,18 +2,19 @@ package com.sda.projectd;
 
 import com.sda.projectd.model.Company;
 import com.sda.projectd.repository.CompanyRepository;
-import com.sda.projectd.service.CompanyAlreadyExistsException;
-import com.sda.projectd.service.CompanyDoesntExistException;
-import com.sda.projectd.service.CompanyService;
-import com.sda.projectd.service.CompanyServiceImpl;
+import com.sda.projectd.service.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +29,9 @@ import static org.assertj.core.api.Assertions.fail;
 public class CompanyServiceTest {
 
     private CompanyService companyService;
+    private FileService fileService;
+    @Autowired
+    private GridFsOperations operations;
     @Autowired
     private CompanyRepository companyRepository;
 
@@ -35,6 +39,7 @@ public class CompanyServiceTest {
     public void beforeEach() {
         //this.companyService = new CompanyServiceInMemoryImpl();
         this.companyService = new CompanyServiceImpl(companyRepository);
+        this.fileService=new FileServiceImpl(companyService,operations);
     }
 
     @DisplayName("should add a new company with all properties")
@@ -166,12 +171,22 @@ public class CompanyServiceTest {
         assertThat(companiesWithNewName).hasSize(1).containsOnlyElementsOf(companiesWithOldName);
     }
 
-    @DisplayName("should upload file")
+    @DisplayName("should upload file for company")
     @Test
     void test8() throws Exception {
         //given
-        fail("bum");
+        Company companyWithAllProperties = createCompanyWithAllProperties();
+        companyService.addCompany(companyWithAllProperties);
+        Collection<Company> byName = companyService.findByName(companyWithAllProperties.getCurrentName());
+        Long companyId = byName.iterator().next().getId();
+        InputStream inputStream = new ByteArrayInputStream("hello".getBytes());
+        //when
+        String resultId = fileService.uploadFile(inputStream, companyId);
+        //then
+        InputStream foundFileContent = fileService.downloadFile(resultId);
+        assertThat(foundFileContent).hasSameContentAs(inputStream);
     }
+
 
     private Company createCompanyWithTwoNames() {
         Company company = createCompanyWithAllProperties();

@@ -1,11 +1,22 @@
 package com.sda.projectd.service;
 
+import com.mongodb.QueryBuilder;
 import com.sda.projectd.model.Company;
 import com.sda.projectd.repository.CompanyRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -52,4 +63,5 @@ public class CompanyServiceImpl implements CompanyService {
     public Optional<Company> findById(Long companyId) {
         return companyRepository.findById(companyId);
     }
+
 }

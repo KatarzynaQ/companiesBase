@@ -1,5 +1,7 @@
 package com.sda.projectd.model;
 
+import org.bson.types.ObjectId;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,6 +20,8 @@ public class Company {
     private String krs;
     private String nip;
     private String regon;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> files;
 
     public void setId(Long id) {
         this.id = id;
@@ -26,6 +30,7 @@ public class Company {
     public Company() {
         this.names=new HashSet<>();
         address = new Address();
+        files=new HashSet<>();
     }
 
     public void setCurrentName(String currentName) {
@@ -79,6 +84,14 @@ public class Company {
 
     public String getCurrentName() {
         return currentName;
+    }
+
+    public Set<String> getFiles() {
+        return files;
+    }
+
+    public void setFiles(Set<String> files) {
+        this.files = files;
     }
 
     @Override
