@@ -170,8 +170,6 @@ public class CompanyServiceTest {
     @Test
     void test8() throws Exception {
         //given
-
-
         fail("bum");
     }
 
@@ -189,6 +187,7 @@ public class CompanyServiceTest {
         company.setRegon("1234567891");
         return company;
     }
+
     private Company createCompanyWithName(String name) {
         Company company = new Company();
         company.setCurrentName(name);
