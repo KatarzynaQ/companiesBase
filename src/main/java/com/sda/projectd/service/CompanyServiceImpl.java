@@ -22,10 +22,12 @@ import java.util.Optional;
 @Service
 public class CompanyServiceImpl implements CompanyService {
     private CompanyRepository companyRepository;
+    private FileService fileService;
 
     @Autowired
-    public CompanyServiceImpl(CompanyRepository companyRepository) {
+    public CompanyServiceImpl(CompanyRepository companyRepository, FileService fileService) {
         this.companyRepository = companyRepository;
+        this.fileService = fileService;
     }
 
     @Override
@@ -52,6 +54,18 @@ public class CompanyServiceImpl implements CompanyService {
         } else
             return companyRepository.
                     save(company);
+    }
+
+    @Override
+    public Company addCompany(Company company, InputStream file) throws CompanyAlreadyExistsException {
+        String newFileId = null;
+        try {
+            newFileId = fileService.uploadFile(file);
+            company.getFiles().add(newFileId);
+            return addCompany(company);
+        } catch (IOException e) {
+            throw new ProjectDException(String.format("Failed to upload file to company %s", company.getId()));
+        }
     }
 
     @Override

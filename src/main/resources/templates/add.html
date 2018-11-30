@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="container">
-    <form th:action="@{/add}" method="post" th:object="${company}">
+    <form th:action="@{/add}" method="post" th:object="${company}" enctype="multipart/form-data">
         <div class="form-group">
             <input type="text" th:field="*{id}" hidden/>
         <p> <label>Nazwa</label>
@@ -41,6 +41,9 @@
             </p>
             <p>  <label> REGON</label>
                 <input type="text" name="regon" th:field="*{regon}">
+            </p>
+            <p>
+                <input type="file" name="file" />
             </p>
         </div>
         <button type="submit" value="Zatwierdź">Zatwierdź</button>

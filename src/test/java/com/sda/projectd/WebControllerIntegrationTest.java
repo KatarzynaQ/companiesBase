@@ -3,6 +3,7 @@ package com.sda.projectd;
 import com.sda.projectd.model.Address;
 import com.sda.projectd.model.Company;
 import com.sda.projectd.service.CompanyService;
+import com.sda.projectd.service.FileService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,13 +12,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,12 +36,15 @@ public class WebControllerIntegrationTest {
     @MockBean
     private CompanyService companyService;
 
+    @MockBean
+    private FileService fileService;
+
     @DisplayName("should add new Company when POST is called on /add")
     @Test
     void test1() throws Exception {
         Company company = createCompany();
         // when
-        mockMvc.perform(postWithCompanyWithoutId(company,"/add"))
+        mockMvc.perform(postWithCompanyWithoutId(company, "/add"))
                 //then
                 .andExpect(status().isOk());
         verify(companyService, times(1)).addCompany(company);
@@ -58,8 +67,8 @@ public class WebControllerIntegrationTest {
         Company company = createCompany();
         company.setId(2L);
         //when
-        mockMvc.perform(postWithCompanyId(company,"/add","2"));
-        verify(companyService,times(1)).updateCompany(2L,company);
+        mockMvc.perform(postWithCompanyId(company, "/add", "2"));
+        verify(companyService, times(1)).updateCompany(2L, company);
     }
 
     @DisplayName("should load findBy name companies")
@@ -99,6 +108,31 @@ public class WebControllerIntegrationTest {
                 .andExpect((model()
                         .attribute("findCompanies", companies)));
     }
+
+    @DisplayName("should call downloadFile when fileId is given")
+    @Test
+    void test5() throws Exception {
+        //given
+        String fileId = "123";
+        String testFileContent = "hello";
+        when(fileService.downloadFile(fileId)).thenReturn(new ByteArrayInputStream(testFileContent.getBytes("UTF-8")));
+
+        //when
+        mockMvc.perform(get("/files").param("id", fileId))
+
+                //then
+                .andExpect(content().contentType("application/octet-stream"))
+                .andExpect(content().string("hello"));
+    }
+
+//    @DisplayName("should add company with file")
+//    @Test
+//    void test6() throws Exception {
+//        Company company = createCompany();
+//        InputStream inputStream=new ByteArrayInputStream("hello".getBytes());
+//
+//    }
+
     private Company createCompany() {
         Company company = new Company();
         company.setCurrentName("Company S.A.");
@@ -108,27 +142,29 @@ public class WebControllerIntegrationTest {
         company.setRegon("111111111");
         return company;
     }
+
     private RequestBuilder postWithCompanyWithoutId(Company company, String path) {
-        return post(path).param("currentName",company.getCurrentName())
-                .param("address.street",company.getAddress().getStreet())
-                .param("address.houseNumber",company.getAddress().getHouseNumber())
-                .param("address.flatNumber",company.getAddress().getFlatNumber())
-                .param("address.postalCode",company.getAddress().getPostalCode())
-                .param("address.city",company.getAddress().getCity())
-                .param("krs",company.getKrs())
-                .param("nip",company.getNip())
-                .param("regon",company.getRegon());
+        return post(path).param("currentName", company.getCurrentName())
+                .param("address.street", company.getAddress().getStreet())
+                .param("address.houseNumber", company.getAddress().getHouseNumber())
+                .param("address.flatNumber", company.getAddress().getFlatNumber())
+                .param("address.postalCode", company.getAddress().getPostalCode())
+                .param("address.city", company.getAddress().getCity())
+                .param("krs", company.getKrs())
+                .param("nip", company.getNip())
+                .param("regon", company.getRegon());
     }
+
     private RequestBuilder postWithCompanyId(Company company, String s, String id) {
-        return post(s).param("currentName",company.getCurrentName())
-                .param("address.street",company.getAddress().getStreet())
-                .param("address.houseNumber",company.getAddress().getHouseNumber())
-                .param("address.flatNumber",company.getAddress().getFlatNumber())
-                .param("address.postalCode",company.getAddress().getPostalCode())
-                .param("address.city",company.getAddress().getCity())
-                .param("krs",company.getKrs())
-                .param("nip",company.getNip())
-                .param("regon",company.getRegon())
-                .param("id",id);
+        return post(s).param("currentName", company.getCurrentName())
+                .param("address.street", company.getAddress().getStreet())
+                .param("address.houseNumber", company.getAddress().getHouseNumber())
+                .param("address.flatNumber", company.getAddress().getFlatNumber())
+                .param("address.postalCode", company.getAddress().getPostalCode())
+                .param("address.city", company.getAddress().getCity())
+                .param("krs", company.getKrs())
+                .param("nip", company.getNip())
+                .param("regon", company.getRegon())
+                .param("id", id);
     }
 }

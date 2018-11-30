@@ -29,17 +29,16 @@ import static org.assertj.core.api.Assertions.fail;
 public class CompanyServiceTest {
 
     private CompanyService companyService;
-    private FileService fileService;
-    @Autowired
-    private GridFsOperations operations;
+
     @Autowired
     private CompanyRepository companyRepository;
+    @Autowired
+    private FileService fileService;
 
     @BeforeEach
     public void beforeEach() {
         //this.companyService = new CompanyServiceInMemoryImpl();
-        this.companyService = new CompanyServiceImpl(companyRepository);
-        this.fileService=new FileServiceImpl(companyService,operations);
+        this.companyService = new CompanyServiceImpl(companyRepository, fileService);
     }
 
     @DisplayName("should add a new company with all properties")
@@ -170,23 +169,6 @@ public class CompanyServiceTest {
         Collection<Company> companiesWithOldName = companyService.findByName("old");
         assertThat(companiesWithNewName).hasSize(1).containsOnlyElementsOf(companiesWithOldName);
     }
-
-    @DisplayName("should upload file for company")
-    @Test
-    void test8() throws Exception {
-        //given
-        Company companyWithAllProperties = createCompanyWithAllProperties();
-        companyService.addCompany(companyWithAllProperties);
-        Collection<Company> byName = companyService.findByName(companyWithAllProperties.getCurrentName());
-        Long companyId = byName.iterator().next().getId();
-        InputStream inputStream = new ByteArrayInputStream("hello".getBytes());
-        //when
-        String resultId = fileService.uploadFile(inputStream, companyId);
-        //then
-        InputStream foundFileContent = fileService.downloadFile(resultId);
-        assertThat(foundFileContent).hasSameContentAs(inputStream);
-    }
-
 
     private Company createCompanyWithTwoNames() {
         Company company = createCompanyWithAllProperties();

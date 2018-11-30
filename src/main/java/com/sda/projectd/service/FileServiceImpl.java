@@ -12,24 +12,24 @@ import java.io.IOException;
 import java.io.InputStream;
 @Service
 public class FileServiceImpl implements FileService {
-    CompanyService companyService;
-    private GridFsOperations operations;
 
-    @Autowired
-    public FileServiceImpl(CompanyService companyService, GridFsOperations operations) {
-        this.companyService = companyService;
+
+    private final GridFsOperations operations;
+
+    public FileServiceImpl(GridFsOperations operations) {
         this.operations = operations;
     }
 
+    /**
+     * @param inputStream
+     * @return
+     * fileId
+     * @throws IOException
+     */
     @Override
-    public String uploadFile(InputStream inputStream, Long companyId) throws IOException {
-        return companyService.findById(companyId).map(company -> {
-            ObjectId id = operations.store(inputStream, "default-file");
-            company.getFiles().add(id.toString());
-            companyService.updateCompany(companyId, company);
-            return id.toString();
-        }).orElseThrow(() ->
-                new CompanyDoesntExistException(String.format("Failed to upload a file. Company %s doesn't exist.", companyId.toString())));
+    public String uploadFile(InputStream inputStream) throws IOException {
+            ObjectId fileId = operations.store(inputStream, "default-file");
+            return fileId.toString();
     }
 
     @Override
