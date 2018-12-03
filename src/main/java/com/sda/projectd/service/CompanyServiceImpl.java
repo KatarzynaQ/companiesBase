@@ -32,7 +32,9 @@ public class CompanyServiceImpl implements CompanyService {
             oldCompany.setNip(company.getNip());
             oldCompany.setRegon(company.getRegon());
             oldCompany.setAddress(company.getAddress());
-            oldCompany.setFiles(company.getFiles());
+            if (company.getFiles() != null) {
+                oldCompany.setFiles(company.getFiles());
+            }
             companyRepository.save(oldCompany);
             return oldCompany;
         }).orElseThrow(() -> new CompanyDoesntExistException("Nie ma takiej firmy"));
