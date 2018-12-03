@@ -4,15 +4,19 @@ import com.sda.projectd.model.Address;
 import com.sda.projectd.model.Company;
 import com.sda.projectd.service.CompanyService;
 import com.sda.projectd.service.FileService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -20,8 +24,10 @@ import java.util.Arrays;
 import java.util.Collection;
 
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -125,13 +131,22 @@ public class WebControllerIntegrationTest {
                 .andExpect(content().string("hello"));
     }
 
-//    @DisplayName("should add company with file")
-//    @Test
-//    void test6() throws Exception {
-//        Company company = createCompany();
-//        InputStream inputStream=new ByteArrayInputStream("hello".getBytes());
-//
-//    }
+    @DisplayName("should add company with file")
+    @Test
+    @Disabled
+    void test6() throws Exception {
+        // given
+        Company company = createCompany();
+        byte[] fileContent = "hello".getBytes("UTF-8");
+        MockMultipartFile file = new MockMultipartFile("file", new ByteArrayInputStream(fileContent));
+
+        // when
+        mockMvc.perform(postWithCompanyWithoutIdAndWithFile(company, file, "/add"))
+
+                // then
+                .andExpect(status().isOk());
+        verify(companyService).addCompany(company, new ByteArrayInputStream(fileContent));
+    }
 
     private Company createCompany() {
         Company company = new Company();
@@ -143,16 +158,27 @@ public class WebControllerIntegrationTest {
         return company;
     }
 
+    private RequestBuilder postWithCompanyWithoutIdAndWithFile(Company company, MockMultipartFile file, String path) {
+        return multipart(path).file(file).params(convertCompanyToParams(company));
+    }
+
     private RequestBuilder postWithCompanyWithoutId(Company company, String path) {
-        return post(path).param("currentName", company.getCurrentName())
-                .param("address.street", company.getAddress().getStreet())
-                .param("address.houseNumber", company.getAddress().getHouseNumber())
-                .param("address.flatNumber", company.getAddress().getFlatNumber())
-                .param("address.postalCode", company.getAddress().getPostalCode())
-                .param("address.city", company.getAddress().getCity())
-                .param("krs", company.getKrs())
-                .param("nip", company.getNip())
-                .param("regon", company.getRegon());
+        return post(path)
+                .params(convertCompanyToParams(company));
+    }
+
+    private MultiValueMap<String, String> convertCompanyToParams(Company company) {
+        LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("currentName", company.getCurrentName());
+        params.add("address.street", company.getAddress().getStreet());
+        params.add("address.houseNumber", company.getAddress().getHouseNumber());
+        params.add("address.flatNumber", company.getAddress().getFlatNumber());
+        params.add("address.postalCode", company.getAddress().getPostalCode());
+        params.add("address.city", company.getAddress().getCity());
+        params.add("krs", company.getKrs());
+        params.add("nip", company.getNip());
+        params.add("regon", company.getRegon());
+        return params;
     }
 
     private RequestBuilder postWithCompanyId(Company company, String s, String id) {

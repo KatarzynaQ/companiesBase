@@ -1,5 +1,6 @@
 package com.sda.projectd;
 
+import com.sda.projectd.model.Address;
 import com.sda.projectd.model.Company;
 import com.sda.projectd.repository.CompanyRepository;
 import com.sda.projectd.service.*;
@@ -8,8 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.anyOf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
@@ -32,7 +34,7 @@ public class CompanyServiceTest {
 
     @Autowired
     private CompanyRepository companyRepository;
-    @Autowired
+    @MockBean
     private FileService fileService;
 
     @BeforeEach
@@ -170,6 +172,32 @@ public class CompanyServiceTest {
         assertThat(companiesWithNewName).hasSize(1).containsOnlyElementsOf(companiesWithOldName);
     }
 
+    @DisplayName("should save file in company")
+    @Test
+    void test8() throws Exception {
+        //given
+        Company company = createCompanyWithAllProperties();
+        //when
+        when(fileService.uploadFile(any(InputStream.class))).thenReturn("test");
+        companyService.addCompany(company, new ByteArrayInputStream("hello".getBytes()));
+        //than
+        assertThat(company.getFiles()).containsOnly("test");
+    }
+
+    @DisplayName("should actualize list of fileId when update company with file")
+    @Test
+    void test9() throws Exception {
+        //given
+        Company companyWithAllProperties = createCompanyWithAllProperties();
+        companyService.addCompany(companyWithAllProperties);
+        companyWithAllProperties.setId(1L);
+        //when
+        when(fileService.uploadFile(any(InputStream.class))).thenReturn("test");
+        companyService.updateCompany(companyWithAllProperties.getId(), companyWithAllProperties, new ByteArrayInputStream("hello".getBytes()));
+
+        assertThat(companyWithAllProperties.getFiles()).hasSize(1);
+    }
+
     private Company createCompanyWithTwoNames() {
         Company company = createCompanyWithAllProperties();
         company.setCurrentName("Nowa nazwa Firmy");
@@ -182,6 +210,7 @@ public class CompanyServiceTest {
         company.setKrs("1234567891");
         company.setNip("1234567891");
         company.setRegon("1234567891");
+        company.setAddress(new Address("Ulica", "1", "1", "11-111", "X"));
         return company;
     }
 

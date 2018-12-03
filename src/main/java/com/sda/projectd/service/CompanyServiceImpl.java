@@ -1,22 +1,13 @@
 package com.sda.projectd.service;
 
-import com.mongodb.QueryBuilder;
 import com.sda.projectd.model.Company;
 import com.sda.projectd.repository.CompanyRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.BasicQuery;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -41,10 +32,23 @@ public class CompanyServiceImpl implements CompanyService {
             oldCompany.setNip(company.getNip());
             oldCompany.setRegon(company.getRegon());
             oldCompany.setAddress(company.getAddress());
-            // repeat for all the other properties you want to update from the company object
+            oldCompany.setFiles(company.getFiles());
             companyRepository.save(oldCompany);
             return oldCompany;
         }).orElseThrow(() -> new CompanyDoesntExistException("Nie ma takiej firmy"));
+    }
+
+    @Override
+    public void updateCompany(Long id, Company company, InputStream file) throws CompanyDoesntExistException {
+        String fileId = null;
+        try {
+            fileId = fileService.uploadFile(file);
+            Company byId = findById(id).get();
+            byId.getFiles().add(fileId);
+            updateCompany(id, byId);
+        } catch (IOException e) {
+            throw new ProjectDException(String.format("Failed to upload file to company %c", company.getId()));
+        }
     }
 
     @Override

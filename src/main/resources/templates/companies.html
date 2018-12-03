@@ -80,7 +80,7 @@
                     <!--<span th:text="${company.address.city}">Miasta</span>-->
 
                     <a th:href="@{/add(companyId=${company.id})}">Edytuj</a>
-                    <div th:each="file:${company.files}" th:href="@{/file/${file}}"></div>
+                    <div th:each="file:${company.files}" th:href="@{/files/${id}}"></div>
                 </div>
             </div>
         </div>

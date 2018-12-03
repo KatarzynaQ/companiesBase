@@ -32,7 +32,6 @@ public class FileServiceTest {
     @Test
     void test8() throws Exception {
         //given
-
         InputStream inputStream = new ByteArrayInputStream("hello".getBytes());
         //when
         String resultId = fileService.uploadFile(inputStream);
