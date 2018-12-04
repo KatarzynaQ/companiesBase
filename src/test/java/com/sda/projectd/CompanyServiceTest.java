@@ -188,17 +188,20 @@ public class CompanyServiceTest {
     @Test
     void test9() throws Exception {
         //given
-        Company companyWithAllProperties = createCompanyWithAllProperties();
-        companyService.addCompany(companyWithAllProperties);
-        companyWithAllProperties.setId(1L);
-        //when
-        when(fileService.uploadFile(any(InputStream.class))).thenReturn("test");
-        companyService.updateCompany(companyWithAllProperties.getId(), companyWithAllProperties, new ByteArrayInputStream("hello".getBytes()));
+	Company existingCompany = companyService.addCompany
+		(createCompanyWithAllProperties());
+	when(fileService.uploadFile(any(InputStream.class))).thenReturn("testFileId");
 
-        assertThat(companyWithAllProperties.getFiles()).hasSize(1);
+        //when
+        companyService.updateCompany(existingCompany.getId(), existingCompany, new ByteArrayInputStream("hello".getBytes()));
+
+        // then
+	Company updatedCompany = companyService.findById(existingCompany
+	    .getId()).get();
+        assertThat(updatedCompany.getFiles()).containsOnly("testFileId");
     }
 
-    private Company createCompanyWithTwoNames() {
+	private Company createCompanyWithTwoNames() {
         Company company = createCompanyWithAllProperties();
         company.setCurrentName("Nowa nazwa Firmy");
         return company;
