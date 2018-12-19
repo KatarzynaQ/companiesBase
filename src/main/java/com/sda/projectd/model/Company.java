@@ -1,7 +1,5 @@
 package com.sda.projectd.model;
 
-import org.bson.types.ObjectId;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Objects;
@@ -99,17 +97,19 @@ public class Company {
         if (this == o) return true;
         if (!(o instanceof Company)) return false;
         Company company = (Company) o;
-        return Objects.equals(names, company.names) &&
+        return Objects.equals(id, company.id) &&
+                Objects.equals(names, company.names) &&
                 Objects.equals(address, company.address) &&
                 Objects.equals(currentName, company.currentName) &&
                 Objects.equals(krs, company.krs) &&
                 Objects.equals(nip, company.nip) &&
-                Objects.equals(regon, company.regon);
+                Objects.equals(regon, company.regon) &&
+                Objects.equals(files, company.files);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(names, address, currentName, krs, nip, regon);
+        return Objects.hash(id, names, address, currentName, krs, nip, regon, files);
     }
 
     @Override
@@ -122,6 +122,7 @@ public class Company {
                 ", krs='" + krs + '\'' +
                 ", nip='" + nip + '\'' +
                 ", regon='" + regon + '\'' +
+                ", files=" + files +
                 '}';
     }
 }

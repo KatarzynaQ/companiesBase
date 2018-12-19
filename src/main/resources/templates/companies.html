@@ -72,15 +72,9 @@
                             <td th:text="${company.regon}"></td>
                         </tbody>
                     </table>
-                    <!--<span th:each="name:${company.names}" th:text="${name}">Pierwsza Nazwa</span>-->
-                    <!--<span th:text="${company.address.street}">Ulica</span>-->
-                    <!--<span th:text="${company.address.houseNumber}">2</span>-->
-                    <!--<span th:text="${company.address.flatNumber}">1</span>-->
-                    <!--<span th:text="${company.address.postalCode}">11-111</span>-->
-                    <!--<span th:text="${company.address.city}">Miasta</span>-->
 
                     <a th:href="@{/add(companyId=${company.id})}">Edytuj</a>
-                    <div th:each="file:${company.files}" th:href="@{/files/${id}}"></div>
+                    <span class="border" th:each="file:${company.files}" th:href="@{/files/${file}}"></span>
                 </div>
             </div>
         </div>

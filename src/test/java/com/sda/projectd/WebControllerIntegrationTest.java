@@ -142,9 +142,8 @@ public class WebControllerIntegrationTest {
 
         // when
         mockMvc.perform(postWithCompanyWithoutIdAndWithFile(company, file, "/add"))
-
                 // then
-                .andExpect(status().isOk());
+               .andExpect(status().isOk());
         verify(companyService).addCompany(company, new ByteArrayInputStream(fileContent));
     }
 

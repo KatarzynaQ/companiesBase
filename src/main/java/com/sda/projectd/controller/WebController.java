@@ -1,13 +1,10 @@
 package com.sda.projectd.controller;
 
 import com.sda.projectd.model.Company;
-import com.sda.projectd.service.CompanyAlreadyExistsException;
 import com.sda.projectd.service.CompanyService;
 import com.sda.projectd.service.FileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Optional;
 
 @Controller
 public class WebController {
@@ -42,7 +38,7 @@ public class WebController {
 
     @GetMapping(value = "/files", produces = "application/octet-stream")
     @ResponseBody
-    Resource dowloadFile(@RequestParam("id") String fileId) throws Exception {
+    Resource dowloadFile(@RequestParam("file") String fileId) throws Exception {
         InputStream fileInputStream = fileService.downloadFile(fileId);
         return new InputStreamResource(fileInputStream);
     }
